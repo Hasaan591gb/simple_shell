@@ -95,6 +95,7 @@ char *reader(char *buffer, size_t len)
 char **tokenisor(char *cmd_tokens[], char *buffer, char *delimiter, int index)
 {
 	int count;
+	char *last_token;
 	/**
 	 * TOKENISING
 	 * strtok - splits buffer into cmd_tokens using any specified delimeter.
@@ -121,6 +122,27 @@ char **tokenisor(char *cmd_tokens[], char *buffer, char *delimiter, int index)
 	{
 		++index;
 		cmd_tokens[index] = strtok(NULL, delimiter);
+	}
+
+	/* Strip unwanted characters from the last token */
+	last_token = cmd_tokens[index - 1];
+	if (last_token[strlen(last_token) - 1] == '\n')
+	{
+		/* Remove new line */
+		last_token[strlen(last_token) - 1] = '\0';
+	}
+
+	if (last_token[0] == '\'' && last_token[strlen(last_token) - 1] == '\'')
+	{
+		/* Remove single quotes */
+		memmove(last_token, last_token + 1, strlen(last_token));
+		last_token[strlen(last_token) - 1] = '\0';
+	}
+
+	if (last_token[0] == '$')
+	{
+		/* Remove the dollar sign */
+		memmove(last_token, last_token + 1, strlen(last_token));
 	}
 
 	/* Loop to display tokens individually */
