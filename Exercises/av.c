@@ -10,6 +10,8 @@
 int main(int ac, char **av)
 {
 	int i;
+	/* Provision for unused variable "argc" */
+	(void)ac;
 
 	/* iterate through each argument and print it */
 	for (i = 0; *(av + i); i++)

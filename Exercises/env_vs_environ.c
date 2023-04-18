@@ -12,6 +12,10 @@ extern char **environ;
  */
 int main(int argc, char **argv, char **env)
 {
+	/* Provision for unused variables "argc and argv" */
+	(void)argc;
+	(void)argv;
+
 	/* print the address of the env variable */
 	printf("Address of env: %p\n", (void *)env);
 
