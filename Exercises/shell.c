@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+/**
+ * main - reads commands from standard input and executes them
+ *
+ * Return: 0 on success
+ */
 int main(void)
 {
 	char *line = NULL;
@@ -12,6 +17,7 @@ int main(void)
 	char *args[2];
 	int status;
 
+	/* read commands from standard input */
 	while (1)
 	{
 		printf("#cisfun$ ");
@@ -20,6 +26,7 @@ int main(void)
 			break;
 		line[nread - 1] = '\0';
 
+		/* create a child process to execute the command */
 		child_pid = fork();
 		if (child_pid == -1)
 		{
@@ -28,6 +35,7 @@ int main(void)
 		}
 		if (child_pid == 0)
 		{
+			/* execute the command in the child process */
 			args[0] = line;
 			args[1] = NULL;
 			execve(args[0], args, NULL);
@@ -35,6 +43,7 @@ int main(void)
 			exit(1);
 		}
 		else
+			/* wait for the child process to complete */
 			wait(&status);
 	}
 
