@@ -4,11 +4,15 @@
 
 > #### - A Shell is a user interface for access to the operating system's services.
 >
-> #### - A User interacts with it via the Command Line Interface (CLI).
+> #### - A User interacts with it via the Terminal.
 
 ## SNAPSHOT
 
 ![Structs](assets/Screenshot%20from%202023-04-15%2019-34-50.png)
+
+#### [Allowed functions](https://github.com/Hasaan591gb/simple_shell/tree/main/Functions)
+
+#### [Exercises](https://github.com/Hasaan591gb/simple_shell/tree/main/Exercises)
 
 # Tasks
 
