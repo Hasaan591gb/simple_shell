@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -10,12 +11,15 @@
  */
 int main(void)
 {
-	char *line = NULL;
+	char *line = NULL, *linecpy = NULL;
+	char *delim = " \n";
 	pid_t child_pid;
 	ssize_t nread;
 	size_t len = 0;
-	char *args[2];
-	int status;
+	char **argv;
+	int i;
+	char *token;
+	int num_token = 0;
 
 	/* read commands from standard input */
 	while (1)
@@ -24,27 +28,35 @@ int main(void)
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 			break;
-		line[nread - 1] = '\0';
 
-		/* create a child process to execute the command */
-		child_pid = fork();
-		if (child_pid == -1)
+		linecpy = malloc(sizeof(char) * nread);
+		if (linecpy == NULL)
+			return (1);
+
+		strcpy(linecpy, line);
+		token = strtok(linecpy, delim);
+		while(token != NULL)
 		{
-			perror("Error");
-			exit(1);
+			num_token++;
+			token = strtok(NULL, delim);
 		}
-		if (child_pid == 0)
+
+		argv = malloc(sizeof(char *) * (num_token + 1));
+		token = strtok(line, delim);
+		for(i = 0; token != NULL; i++)
 		{
-			/* execute the command in the child process */
-			args[0] = line;
-			args[1] = NULL;
-			execve(args[0], args, NULL);
-			perror("Error");
-			exit(1);
+			argv[i] = malloc(sizeof(char) * strlen(token));
+			strcpy(argv[i], token);
+			token = strtok(NULL, delim);
 		}
-		else
-			/* wait for the child process to complete */
-			wait(&status);
+		argv[i] = NULL;
+
+		execute(argv);
+
+		for (i = 0; i <= num_token; i++)
+			free(argv[i]);
+		free(argv);
+		free(linecpy);
 	}
 
 	free(line);

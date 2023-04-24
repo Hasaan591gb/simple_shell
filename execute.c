@@ -12,6 +12,12 @@ void execute(char **argv)
 		command = argv[0];
 		full_command = get_path(command);
 
+		if (full_command == NULL)
+		{
+			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], command);
+			return;
+		}
+
 		child_pid = fork();
 		if (child_pid == -1)
 		{
@@ -28,5 +34,7 @@ void execute(char **argv)
 		else
 			/* wait for the child process to complete */
 			wait(&status);
+
+		free(full_command);
 	}
 }
