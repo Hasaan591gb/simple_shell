@@ -35,8 +35,7 @@ ssize_t _getline(char **lineptr, size_t *n)
 		}
 		while (start < end)
 		{
-			if (len >= *n - 1)
-			{
+			if (len >= *n - 1) {
 				*n *= 2;
 				*lineptr = realloc(*lineptr, *n);
 				if (*lineptr == NULL)
