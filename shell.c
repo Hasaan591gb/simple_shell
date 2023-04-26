@@ -12,7 +12,6 @@ int main(void)
 {
 	char *line = NULL, *linecpy = NULL;
 	char *delim = " \n";
-	pid_t child_pid;
 	ssize_t nread;
 	size_t len = 0;
 	char **argv;
@@ -50,7 +49,7 @@ int main(void)
 		}
 		argv[i] = NULL;
 
-		check_exit(&argv, &line, &linecpy, num_token);
+		check_exit(argv, line, linecpy, num_token);
 		check_env(argv);
 		if (strcmp(argv[0], "env") != 0)
 			execute(argv);
