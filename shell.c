@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/wait.h>
+#include "main.h"
+
+void check_exit(char **argv, char *line, char *linecpy, int num_token);
+void check_env(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -25,7 +24,7 @@ int main(void)
 	while (1)
 	{
 		printf("#cisfun$ ");
-		nread = getline(&line, &len, stdin);
+		nread = _getline(&line, &len);
 		if (nread == -1)
 			break;
 
@@ -34,24 +33,27 @@ int main(void)
 			return (1);
 
 		strcpy(linecpy, line);
-		token = strtok(linecpy, delim);
+		token = _strtok(linecpy, delim);
 		while(token != NULL)
 		{
 			num_token++;
-			token = strtok(NULL, delim);
+			token = _strtok(NULL, delim);
 		}
 
 		argv = malloc(sizeof(char *) * (num_token + 1));
-		token = strtok(line, delim);
+		token = _strtok(line, delim);
 		for(i = 0; token != NULL; i++)
 		{
 			argv[i] = malloc(sizeof(char) * strlen(token));
 			strcpy(argv[i], token);
-			token = strtok(NULL, delim);
+			token = _strtok(NULL, delim);
 		}
 		argv[i] = NULL;
 
-		execute(argv);
+		check_exit(&argv, &line, &linecpy, num_token);
+		check_env(argv);
+		if (strcmp(argv[0], "env") != 0)
+			execute(argv);
 
 		for (i = 0; i <= num_token; i++)
 			free(argv[i]);
@@ -61,4 +63,35 @@ int main(void)
 
 	free(line);
 	return (0);
+}
+
+void check_exit(char **argv, char *line, char *linecpy, int num_token)
+{
+	int i, status;
+
+	if (strcmp(argv[0], "exit") == 0)
+	{
+		if (argv[1] != NULL)
+			status = _atoi(argv[1]);
+		else
+			status = EXIT_SUCCESS;
+		free(line);
+		free(linecpy);
+		for (i = 0; i <= num_token; i++)
+			free(argv[i]);
+		free(argv);
+
+		exit(status);
+	}
+}
+
+void check_env(char **argv)
+{
+	int i;
+
+	if (strcmp(argv[0], "env") == 0)
+	{
+		for (i = 0; environ[i] != NULL; i++)
+			printf("%s\n", environ[i]);
+	}
 }

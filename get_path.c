@@ -11,7 +11,7 @@ char *get_path(char *command)
 	while (dir != NULL)
 	{
 		snprintf(full_path, 1024, "%s/%s", dir, command);
-		if (access(full_path, X_OK) == 0)
+		if (stat(full_path, &buffer) == 0 && access(full_path, X_OK) == 0)
 		{
 			free(path_copy);
 			return (strdup(full_path));
@@ -19,7 +19,7 @@ char *get_path(char *command)
 		dir = strtok(NULL, ":");
 	}
 
-	if (stat(command, &buffer) == 0)
+	if (stat(command, &buffer) == 0 && access(command, X_OK) == 0)
 		return (strdup(command));
 
 	free(path_copy);
