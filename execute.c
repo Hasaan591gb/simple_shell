@@ -1,6 +1,54 @@
 #include "main.h"
 
 /**
+ * cd_command - changes the current working directory
+ * @argv: array of arguments passed to the cd command
+ *
+ * Description: If argv[1] is NULL, changes the current working directory to
+ * the value of the HOME environment variable. If argv[1] is "-", changes the
+ * current working directory to the value of the OLDPWD environment variable
+ * and prints its value to stdout. Otherwise, changes the current working
+ * directory to the value of argv[1]. Updates the OLDPWD and PWD environment
+ * variables.
+ */
+void cd_command(char **argv)
+{
+	char *directory = NULL;
+	char *home = NULL;
+	char *oldpwd = NULL;
+	char cwd[PATH_MAX];
+
+	directory = argv[1];
+	if (directory == NULL)
+	{
+		home = getenv("HOME");
+		if (home != NULL)
+			directory = home;
+	}
+	else if (strcmp(directory, "-") == 0)
+	{
+		oldpwd = getenv("OLDPWD");
+		if (oldpwd != NULL)
+		{
+			directory = oldpwd;
+			printf("%s\n", directory);
+		}
+	}
+
+	if (directory != NULL)
+	{
+		if (chdir(directory) == -1)
+			perror("Error: cd failed");
+		else
+		{
+			_setenv("OLDPWD", getenv("PWD"), 1);
+			if (getcwd(cwd, sizeof(cwd)) != NULL)
+				_setenv("PWD", cwd, 1);
+		}
+	}
+}
+
+/**
  * execute_command - executes a command
  * @full_command: full path of the command to be executed
  * @argv: array of arguments
@@ -67,15 +115,38 @@ void execute(char **argv)
 	if (argv)
 	{
 		command = argv[0];
-		full_command = get_path(command);
-		if (full_command == NULL)
+		if (strcmp(command, "cd") == 0)
+			cd_command(argv);
+		else if(strcmp(command, "setenv") == 0)
 		{
-			fprintf(stderr, "%s: 1: %s not found\n", argv[0], command);
-			return;
+			if (argv[1] && argv[2])
+			{
+				if (_setenv(argv[1], argv[2], 1) == -1)
+					fprintf(stderr, "Error: setenv failed\n");
+			}
+			else
+				fprintf(stderr, "Error: setenv requires two arguments\n");
 		}
-
-		execute_command(full_command, argv);
-
-		free(full_command);
+		else if (strcmp(command, "unsetenv") == 0)
+		{
+			if (argv[1])
+			{
+				if (_unsetenv(argv[1]) == -1)
+					fprintf(stderr, "Error: unsetenv failed\n");
+			}
+			else
+				fprintf(stderr, "Error: unsetenv requires one argument\n");
+		}
+		else
+		{
+			full_command = get_path(command);
+			if (full_command == NULL)
+			{
+				fprintf(stderr, "%s: 1: command not found\n", argv[0]);
+				return;
+			}
+			execute_command(full_command, argv);
+			free(full_command);
+		}
 	}
 }
