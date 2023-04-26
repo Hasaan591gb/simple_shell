@@ -1,5 +1,9 @@
 #include "main.h"
-
+/**
+ * get_path - gets the path
+ * @command: command passed
+ * Return: path
+ */
 char *get_path(char *command)
 {
 	char *path = getenv("PATH");

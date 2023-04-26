@@ -17,7 +17,6 @@ ssize_t _getline(char **lineptr, size_t *n)
 
 	if (lineptr == NULL || n == NULL)
 		return (-1);
-
 	if (*lineptr == NULL)
 	{
 		*lineptr = malloc(BUFFER_SIZE);
@@ -25,7 +24,6 @@ ssize_t _getline(char **lineptr, size_t *n)
 			return (-1);
 		*n = BUFFER_SIZE;
 	}
-
 	while (1)
 	{
 		if (start >= end)
@@ -33,10 +31,8 @@ ssize_t _getline(char **lineptr, size_t *n)
 			nread = read(STDIN_FILENO, buffer, BUFFER_SIZE);
 			if (nread <= 0)
 				return (nread);
-			start = 0;
-			end = nread;
+			start = 0, end = nread;
 		}
-
 		while (start < end)
 		{
 			if (len >= *n - 1)
@@ -46,7 +42,6 @@ ssize_t _getline(char **lineptr, size_t *n)
 				if (*lineptr == NULL)
 					return (-1);
 			}
-
 			(*lineptr)[len++] = buffer[start++];
 			if ((*lineptr)[len - 1] == '\n')
 			{
@@ -55,6 +50,5 @@ ssize_t _getline(char **lineptr, size_t *n)
 			}
 		}
 	}
-
 	return (-1);
 }

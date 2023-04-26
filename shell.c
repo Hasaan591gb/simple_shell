@@ -33,7 +33,7 @@ int main(void)
 
 		strcpy(linecpy, line);
 		token = _strtok(linecpy, delim);
-		while(token != NULL)
+		while (token != NULL)
 		{
 			num_token++;
 			token = _strtok(NULL, delim);
@@ -41,7 +41,7 @@ int main(void)
 
 		argv = malloc(sizeof(char *) * (num_token + 1));
 		token = _strtok(line, delim);
-		for(i = 0; token != NULL; i++)
+		for (i = 0; token != NULL; i++)
 		{
 			argv[i] = malloc(sizeof(char) * strlen(token));
 			strcpy(argv[i], token);
@@ -63,6 +63,14 @@ int main(void)
 	free(line);
 	return (0);
 }
+/**
+ * check_exit - Checks exit
+ * @argv: array of arguments
+ * @line: line
+ * @linecpy: copy of the line
+ * @num_token: number of token
+ *
+ */
 
 void check_exit(char **argv, char *line, char *linecpy, int num_token)
 {
@@ -83,7 +91,10 @@ void check_exit(char **argv, char *line, char *linecpy, int num_token)
 		exit(status);
 	}
 }
-
+/**
+ * check_env - Checks environment
+ * @argv: array of arguments
+ */
 void check_env(char **argv)
 {
 	int i;
