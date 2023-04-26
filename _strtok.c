@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * _f_strtok - choves one token at a time using delimiter until NULL.
+ * _strtok - choves one token at a time using delimiter until NULL.
  * @str: string to be tokenised
  * @delim: termination point
  *
@@ -13,7 +13,7 @@
  *
  * Return: string/token
  */
-char *_f_strtok(char *str, const char *delim)
+char *_strtok(char *str, const char *delim)
 {
 	/* Static variable to keep track of where the previous token ended */
 	static char *next_token;
