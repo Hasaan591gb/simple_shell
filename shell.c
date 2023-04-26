@@ -11,7 +11,7 @@ void check_env(char **argv);
 int main(void)
 {
 	char *line = NULL, *linecpy = NULL;
-	char *delim = " \n";
+	char *delim = " ;\n";
 	ssize_t nread;
 	size_t len = 0;
 	char **argv;
