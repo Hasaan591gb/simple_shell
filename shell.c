@@ -27,6 +27,8 @@ int main(void)
 		nread = _getline(&line, &len);
 		if (nread == -1)
 			break;
+		if (nread == 1)
+			continue;
 
 		linecpy = malloc(sizeof(char) * nread);
 		if (linecpy == NULL)
@@ -82,6 +84,8 @@ void check_exit(char **argv, char *line, char *linecpy, int num_token)
 {
 	int i, status;
 
+	if (strcmp(argv[0], "\n") == 0)
+		return;
 	if (strcmp(argv[0], "exit") == 0)
 	{
 		if (argv[1] != NULL)

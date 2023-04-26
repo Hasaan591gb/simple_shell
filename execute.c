@@ -117,7 +117,7 @@ void execute(char **argv)
 		command = argv[0];
 		if (strcmp(command, "cd") == 0)
 			cd_command(argv);
-		else if(strcmp(command, "setenv") == 0)
+		else if (strcmp(command, "setenv") == 0)
 		{
 			if (argv[1] && argv[2])
 			{
