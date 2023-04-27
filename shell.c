@@ -22,8 +22,6 @@ int main(void)
 	/* read commands from standard input */
 	while (1)
 	{
-		printf("#cisfun$ ");
-		fflush(stdout);
 		nread = _getline(&line, &len);
 		if (nread == -1)
 			break;
