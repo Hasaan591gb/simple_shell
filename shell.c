@@ -17,13 +17,14 @@ int main(void)
 	char **argv;
 	int i;
 	char *token;
+	int interactive = isatty(STDIN_FILENO);
 	int num_token = 0;
 
 	/* read commands from standard input */
 	while (1)
 	{
 		/* In case of interativity */
-		if (isatty(STDIN_FILENO))
+		if (interactive)
 		{
 			printf("#cisfun$ ");
 			fflush(stdout);
