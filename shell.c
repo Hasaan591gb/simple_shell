@@ -20,41 +20,46 @@ int main(void)
 	int num_token = 0;
 
 	/* read commands from standard input */
-	nread = _getline(&line, &len);
-	if (nread == -1)
-		return (1);
-
-	linecpy = malloc(sizeof(char) * nread);
-	if (linecpy == NULL)
-		return (1);
-
-	strcpy(linecpy, line);
-	token = _strtok(linecpy, delim);
-	while (token != NULL)
+	while (1)
 	{
-		num_token++;
-		token = _strtok(NULL, delim);
+		nread = _getline(&line, &len);
+		if (nread == -1)
+			break;
+		if (nread == 1)
+			continue;
+
+		linecpy = malloc(sizeof(char) * nread);
+		if (linecpy == NULL)
+			return (1);
+
+		strcpy(linecpy, line);
+		token = _strtok(linecpy, delim);
+		while (token != NULL)
+		{
+			num_token++;
+			token = _strtok(NULL, delim);
+		}
+
+		argv = malloc(sizeof(char *) * (num_token + 1));
+		token = _strtok(line, delim);
+		for (i = 0; token != NULL; i++)
+		{
+			argv[i] = malloc(sizeof(char) * strlen(token));
+			strcpy(argv[i], token);
+			token = _strtok(NULL, delim);
+		}
+		argv[i] = NULL;
+
+		check_exit(argv, line, linecpy, num_token);
+		check_env(argv);
+		if (strcmp(argv[0], "env") != 0)
+			execute(argv);
+
+		for (i = 0; i <= num_token; i++)
+			free(argv[i]);
+		free(argv);
+		free(linecpy);
 	}
-
-	argv = malloc(sizeof(char *) * (num_token + 1));
-	token = _strtok(line, delim);
-	for (i = 0; token != NULL; i++)
-	{
-		argv[i] = malloc(sizeof(char) * strlen(token));
-		strcpy(argv[i], token);
-		token = _strtok(NULL, delim);
-	}
-	argv[i] = NULL;
-
-	check_exit(argv, line, linecpy, num_token);
-	check_env(argv);
-	if (strcmp(argv[0], "env") != 0)
-		execute(argv);
-
-	for (i = 0; i <= num_token; i++)
-		free(argv[i]);
-	free(argv);
-	free(linecpy);
 
 	free(line);
 	return (0);
