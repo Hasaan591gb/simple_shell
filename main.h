@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -23,5 +24,8 @@ ssize_t read_line(char *buffer, size_t *start,
 		size_t end, char **lineptr, size_t *n);
 char *_strtok(char *str, const char *delim);
 int _atoi(char *s);
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+void cd_command(char **argv);
 
 #endif

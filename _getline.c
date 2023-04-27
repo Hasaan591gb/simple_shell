@@ -79,7 +79,12 @@ ssize_t _getline(char **lineptr, size_t *n)
 		if (start >= end)
 		{
 			nread = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-			if (nread <= 0)
+			if (nread == 0)
+			{
+				printf("\n");
+				exit(EXIT_SUCCESS);
+			}
+			if (nread < 0)
 				return (nread);
 			start = 0;
 			end = nread;
