@@ -22,6 +22,12 @@ int main(void)
 	/* read commands from standard input */
 	while (1)
 	{
+		/* In case of interativity */
+		if (isatty(STDIN_FILENO))
+		{
+			printf("#cisfun$ ");
+			fflush(stdout);
+		}
 		nread = _getline(&line, &len);
 		if (nread == -1)
 			break;
