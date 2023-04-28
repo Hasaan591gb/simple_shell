@@ -7,6 +7,7 @@
 #include <sys/types.h>
 
 void execute_command(char *line);
+char *get_path(char *command);
 
 /**
  * main - reads commands from standard input and executes them
@@ -80,6 +81,15 @@ void execute_command(char *line)
 		i++;
 	}
 
+	if (access(argv[0], X_OK) != 0)
+		argv[0] = get_path(argv[0]);
+
+	if (argv[0] == NULL)
+	{
+		perror("invalid command");
+		return;
+	}
+
 	/* Create a new process */
 	pid = fork();
 	if (pid == -1)
@@ -88,10 +98,39 @@ void execute_command(char *line)
 	{
 		/* Execute the command in the child process */
 		execve(argv[0], argv, NULL);
-		fprintf(stderr, "%s: No such file or directory\n", argv[0]);
 		return;
 	}
 	else
 		/* Wait for the child process to complete */
 		wait(NULL);
+}
+
+/**
+ * get_path - finds the full path of a command
+ * @command: the command to find the full path for
+ *
+ * Return: the full path of the command if found, NULL otherwise
+ */
+char *get_path(char *command)
+{
+	char *path = getenv("PATH");
+	char *path_copy = strdup(path);
+	char *dir = strtok(path_copy, ":");
+	char *full_path;
+
+	while (dir != NULL)
+	{
+		full_path = malloc(strlen(dir) + strlen(command) + 2);
+		sprintf(full_path, "%s/%s", dir, command);
+		if (access(full_path, X_OK) == 0)
+		{
+			free(path_copy);
+			return (full_path);
+		}
+		free(full_path);
+		dir = strtok(NULL, ":");
+	}
+
+	free(path_copy);
+	return (NULL);
 }
