@@ -1,13 +1,8 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <sys/types.h>
+#include "main.h"
 
 void execute_command(char *line);
 char *get_path(char *command);
+int check_env(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -81,6 +76,9 @@ void execute_command(char *line)
 		i++;
 	}
 
+	if (check_env(argv) == 0)
+		return;
+
 	if (access(argv[0], X_OK) != 0)
 		argv[0] = get_path(argv[0]);
 
@@ -133,4 +131,24 @@ char *get_path(char *command)
 
 	free(path_copy);
 	return (NULL);
+}
+
+/**
+ * check_env - checks if the first argument is "env" and prints the environment
+ * @argv: the arguments to check
+ *
+ * Return: 0 if the first argument is "env", -1 otherwise
+ */
+int check_env(char **argv)
+{
+	int i;
+
+	if (strcmp(argv[0], "env") == 0)
+	{
+		for (i = 0; environ[i] != NULL; i++)
+			printf("%s\n", environ[i]);
+		return (0);
+	}
+
+	return (-1);
 }
