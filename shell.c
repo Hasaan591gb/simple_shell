@@ -100,7 +100,7 @@ void execute_command(char *line)
 	else if (pid == 0)
 	{
 		/* Execute the command in the child process */
-		if (execve(argv[0], argv, NULL) == -1);
+		if (execve(argv[0], argv, NULL) == -1)
 		{
 			perror("Error: execve failed\n");
 			exit(EXIT_FAILURE);
