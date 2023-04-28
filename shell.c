@@ -16,7 +16,7 @@ void execute_command(char **argv);
 int main(void)
 {
 	char *line = NULL;
-	char *lineptr = NULL;
+	char *linecpy = NULL;
 	char *delim = " \n";
 	size_t len = 0;
 	ssize_t nread;
