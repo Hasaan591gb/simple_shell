@@ -1,7 +1,12 @@
-#include "main.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
-void check_exit(char **argv, char *line, char *linecpy, int num_token);
-void check_env(char **argv);
+void execute_command(char *line);
 
 /**
  * main - reads commands from standard input and executes them
@@ -10,118 +15,70 @@ void check_env(char **argv);
  */
 int main(void)
 {
-	char *line = NULL, *linecpy = NULL;
-	char *delim = " ;\n";
-	ssize_t nread;
+	char *line = NULL;
 	size_t len = 0;
-	char **argv;
-	int i;
-	char *token;
-	int interactive = isatty(STDIN_FILENO);
-	int num_token = 0;
+	ssize_t nread;
 
-	/* read commands from standard input */
 	while (1)
 	{
-		/* In case of interativity */
-		if (interactive)
-		{
-			printf("#cisfun$ ");
-			fflush(stdout);
-		}
-		nread = _getline(&line, &len);
+		if (isatty(STDIN_FILENO) == 1)
+			printf("# ");
+		else
+			fprintf(stderr, "Error: fd not terminal\n");
+
+		nread = getline(&line, &len, stdin);
 		if (nread == -1)
-			break;
-		if (nread == 1)
+		{
+			if (feof(stdin))
+			{
+				printf("end of file");
+				break;
+			}
+			else
+			{
+				fprintf(stderr, "Error: %s\n", strerror(errno));
+				continue;
+			}
+		}
+		else if (strcmp(line, "\n") == 0)
 			continue;
 
-		linecpy = malloc(sizeof(char) * nread);
-		if (linecpy == NULL)
-			return (1);
-
-		strcpy(linecpy, line);
-		token = _strtok(linecpy, delim);
-		while (token != NULL)
-		{
-			num_token++;
-			token = _strtok(NULL, delim);
-		}
-
-		argv = malloc(sizeof(char *) * (num_token + 1));
-		token = _strtok(line, delim);
-		for (i = 0; token != NULL; i++)
-		{
-			argv[i] = malloc(sizeof(char) * strlen(token));
-			strcpy(argv[i], token);
-			token = _strtok(NULL, delim);
-		}
-		argv[i] = NULL;
-
-		check_exit(argv, line, linecpy, num_token);
-		check_env(argv);
-		if (strcmp(argv[0], "env") != 0)
-			execute(argv);
-
-		for (i = 0; i <= num_token; i++)
-			free(argv[i]);
-		free(argv);
-		free(linecpy);
+		execute_command(line);
 	}
 
-	free(line);
+	if (line != NULL)
+		free(line);
 	return (0);
 }
 
 /**
- * check_exit - checks if the first argument in argv is "exit" and exits the
- * program accordingly
- * @argv: array of arguments
- * @line: pointer to the buffer that stores the input line
- * @linecpy: pointer to a copy of the input line
- * @num_token: number of tokens in argv
+ * execute_command - executes a command
+ * @line: the command to execute
  *
- * Description: If the first argument in argv is "exit", the function frees
- * the memory allocated for line, linecpy, and argv, and then exits the program
- * with a status code. The status code is either EXIT_SUCCESS or the integer
- * value of the second argument in argv, if it exists.
+ * This function takes a command as input and executes it in a new process.
+ * It uses the fork and execve functions to create a new process and execute
+ * the command in the child process. The parent process waits for the child
+ * process to complete using the wait function.
  */
-void check_exit(char **argv, char *line, char *linecpy, int num_token)
+void execute_command(char *line)
 {
-	int i, status;
+	char *argv[] = {NULL, NULL};
+	pid_t pid;
 
-	if (strcmp(argv[0], "\n") == 0)
-		return;
-	if (strcmp(argv[0], "exit") == 0)
+	/* Tokenize the input to remove the newline character */
+	argv[0] = strtok(line, "\n");
+
+	/* Create a new process */
+	pid = fork();
+	if (pid == -1)
+		perror("Error: fork failed\n");
+	else if (pid == 0)
 	{
-		if (argv[1] != NULL)
-			status = _atoi(argv[1]);
-		else
-			status = EXIT_SUCCESS;
-		free(line);
-		free(linecpy);
-		for (i = 0; i <= num_token; i++)
-			free(argv[i]);
-		free(argv);
-
-		exit(status);
+		/* Execute the command in the child process */
+		execve(argv[0], argv, NULL);
+		fprintf(stderr, "%s: No such file or directory\n", argv[0]);
 	}
-}
-
-/**
- * check_env - checks if the first argument in argv is "env" and prints the
- * environment variables
- * @argv: array of arguments
- *
- * Description: If the first argument in argv is "env", the function prints
- * the environment variables using the global variable environ.
- */
-void check_env(char **argv)
-{
-	int i;
-
-	if (strcmp(argv[0], "env") == 0)
-	{
-		for (i = 0; environ[i] != NULL; i++)
-			printf("%s\n", environ[i]);
-	}
+	else
+		/* Wait for the child process to complete */
+		wait(NULL);
 }
