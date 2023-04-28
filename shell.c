@@ -69,6 +69,8 @@ void execute_command(char *line)
 
 	/* Tokenize the input to remove the newline character */
 	token = strtok(line, " \n");
+	if (strcmp(token, "exit") == 0)
+		exit(EXIT_SUCCESS);
 	if (token == NULL)
 	{
 		perror("Error: strtok failed\n");
