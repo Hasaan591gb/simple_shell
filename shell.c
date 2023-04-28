@@ -36,7 +36,7 @@ int main(void)
 		if (nread == -1)
 		{
 			if (feof(stdin))
-				exit(EXIT_SUCCESS);
+				break;
 			fprintf(stderr, "Error: %s\n", strerror(errno));
 			continue;
 		}
@@ -100,9 +100,11 @@ void execute_command(char *line)
 	else if (pid == 0)
 	{
 		/* Execute the command in the child process */
-		execve(argv[0], argv, NULL);
-		perror("Error: execve failed\n");
-		exit(EXIT_FAILURE);
+		if (execve(argv[0], argv, NULL) == -1);
+		{
+			perror("Error: execve failed\n");
+			exit(EXIT_FAILURE);
+		}
 	}
 	else
 		/* Wait for the child process to complete */
