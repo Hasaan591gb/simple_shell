@@ -61,15 +61,23 @@ int main(void)
  */
 void execute_command(char *line)
 {
-	char *argv[] = {NULL, NULL};
+	char *argv[10] = {NULL};
+	char *token;
 	pid_t pid;
+	int i = 0;
 
 	/* Tokenize the input to remove the newline character */
-	argv[0] = strtok(line, " \n");
-	if (argv[0] == NULL)
+	token = strtok(line, " \n");
+	if (token == NULL)
 	{
 		perror("Error: strtok failed\n");
 		return;
+	}
+	while (token != NULL && i < 9)
+	{
+		argv[i] = token;
+		token = strtok(NULL, " \n");
+		i++;
 	}
 
 	/* Create a new process */
