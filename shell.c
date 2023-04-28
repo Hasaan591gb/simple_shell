@@ -43,7 +43,8 @@ int main(void)
 		else if (strcmp(line, "\n") == 0)
 			continue;
 
-		execute_command(line);
+		if (line != NULL)
+			execute_command(line);
 	}
 
 	if (line != NULL)
