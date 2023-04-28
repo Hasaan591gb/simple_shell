@@ -29,8 +29,6 @@ int main(void)
 
 		if (isatty(STDIN_FILENO) == 1)
 			printf("# ");
-		else
-			fprintf(stderr, "Error: fd not terminal\n");
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
@@ -68,6 +66,11 @@ void execute_command(char *line)
 
 	/* Tokenize the input to remove the newline character */
 	argv[0] = strtok(line, "\n");
+	if (argv[0] == NULL)
+	{
+		perror("Error: strtok failed\n");
+		return;
+	}
 
 	/* Create a new process */
 	pid = fork();
