@@ -65,7 +65,7 @@ void execute_command(char *line)
 	pid_t pid;
 
 	/* Tokenize the input to remove the newline character */
-	argv[0] = strtok(line, "\n");
+	argv[0] = strtok(line, " \n");
 	if (argv[0] == NULL)
 	{
 		perror("Error: strtok failed\n");
