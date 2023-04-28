@@ -81,6 +81,7 @@ void execute_command(char *line)
 		/* Execute the command in the child process */
 		execve(argv[0], argv, NULL);
 		fprintf(stderr, "%s: No such file or directory\n", argv[0]);
+		return;
 	}
 	else
 		/* Wait for the child process to complete */
