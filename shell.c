@@ -27,7 +27,7 @@ int main(void)
 		if (isatty(STDIN_FILENO) == 1)
 			printf("# ");
 
-		nread = getline(&line, &len, stdin);
+		nread = _getline(&line, &len);
 		if (nread == -1)
 		{
 			if (feof(stdin))

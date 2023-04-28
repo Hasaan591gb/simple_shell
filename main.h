@@ -15,5 +15,8 @@ void execute_command(char *line);
 char *get_path(char *command);
 void check_exit(char **argv);
 void check_env(char **argv);
+ssize_t _getline(char **lineptr, size_t *n);
+ssize_t read_line(char *buffer, size_t *start,
+		size_t end, char **lineptr, size_t *n);
 
 #endif
