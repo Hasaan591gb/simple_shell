@@ -8,6 +8,7 @@
 
 void execute_command(char *line);
 char *get_path(char *command);
+void check_exit(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -35,7 +36,7 @@ int main(void)
 		if (nread == -1)
 		{
 			if (feof(stdin))
-				break;
+				exit(EXIT_SUCCESS);
 			fprintf(stderr, "Error: %s\n", strerror(errno));
 			continue;
 		}
@@ -69,8 +70,6 @@ void execute_command(char *line)
 
 	/* Tokenize the input to remove the newline character */
 	token = strtok(line, " \n");
-	if (strcmp(token, "exit") == 0)
-		exit(EXIT_SUCCESS);
 	if (token == NULL)
 	{
 		perror("Error: strtok failed\n");
@@ -82,6 +81,8 @@ void execute_command(char *line)
 		token = strtok(NULL, " \n");
 		i++;
 	}
+
+	check_exit(argv);
 
 	if (access(argv[0], X_OK) != 0)
 		argv[0] = get_path(argv[0]);
@@ -100,7 +101,8 @@ void execute_command(char *line)
 	{
 		/* Execute the command in the child process */
 		execve(argv[0], argv, NULL);
-		return;
+		perror("Error: execve failed\n");
+		exit(EXIT_FAILURE);
 	}
 	else
 		/* Wait for the child process to complete */
@@ -135,4 +137,14 @@ char *get_path(char *command)
 
 	free(path_copy);
 	return (NULL);
+}
+
+/**
+ * check_exit - checks if the first argument is "exit" and exits the program
+ * @argv: the arguments to check
+ */
+void check_exit(char **argv)
+{
+	if (strcmp(argv[0], "exit") == 0)
+		exit(EXIT_SUCCESS);
 }
