@@ -79,7 +79,7 @@ void execute_command(char *line)
 		cd_command(argv);
 		return;
 	}
-		else if (strcmp(command, "setenv") == 0)
+		else if (strcmp(argv[0], "setenv") == 0)
 		{
 			if (argv[1] && argv[2])
 			{
@@ -89,7 +89,7 @@ void execute_command(char *line)
 			else
 				fprintf(stderr, "Error: setenv requires two arguments\n");
 		}
-		else if (strcmp(command, "unsetenv") == 0)
+		else if (strcmp(argv[0], "unsetenv") == 0)
 		{
 			if (argv[1])
 			{
