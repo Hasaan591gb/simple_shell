@@ -4,6 +4,7 @@ void execute_command(char *line);
 char *get_path(char *command);
 int check_env(char **argv);
 void cd_command(char **argv);
+void check_exit(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -101,6 +102,7 @@ void execute_command(char *line)
 			fprintf(stderr, "Error: unsetenv requires one argument\n");
 		return;
 	}
+	check_exit(argv);
 
 	if (check_env(argv) == 0)
 		return;
@@ -221,5 +223,25 @@ void cd_command(char **argv)
 			if (getcwd(cwd, sizeof(cwd)) != NULL)
 				setenv("PWD", cwd, 1);
 		}
+	}
+}
+
+/**
+ * check_exit - checks if the first argument is "exit"
+ * @argv: array of strings
+ *
+ * Return: void
+ */
+void check_exit(char **argv)
+{
+	int status;
+
+	if (strcmp(argv[0], "exit") == 0)
+	{
+		if (argv[1] != NULL)
+			status = atoi(argv[1]);
+		else
+			status = EXIT_SUCCESS;
+		exit(status);
 	}
 }
