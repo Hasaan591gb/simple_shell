@@ -3,6 +3,7 @@
 void execute_command(char *line);
 char *get_path(char *command);
 int check_env(char **argv);
+void cd_command(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -65,15 +66,18 @@ void execute_command(char *line)
 	/* Tokenize the input to remove the newline character */
 	token = strtok(line, " \n");
 	if (token == NULL)
-	{
-		perror("Error: strtok failed\n");
 		return;
-	}
 	while (token != NULL && i < 9)
 	{
 		argv[i] = token;
 		token = strtok(NULL, " \n");
 		i++;
+	}
+
+	if (strcmp(argv[0], "cd") == 0)
+	{
+		cd_command(argv);
+		return;
 	}
 
 	if (check_env(argv) == 0)
@@ -151,4 +155,52 @@ int check_env(char **argv)
 	}
 
 	return (-1);
+}
+
+/**
+ * cd_command - changes the current working directory
+ * @argv: array of arguments passed to the cd command
+ *
+ * Description: If argv[1] is NULL, changes the current working directory to
+ * the value of the HOME environment variable. If argv[1] is "-", changes the
+ * current working directory to the value of the OLDPWD environment variable
+ * and prints its value to stdout. Otherwise, changes the current working
+ * directory to the value of argv[1]. Updates the OLDPWD and PWD environment
+ * variables.
+ */
+void cd_command(char **argv)
+{
+	char *directory = NULL;
+	char *home = NULL;
+	char *oldpwd = NULL;
+	char cwd[PATH_MAX];
+
+	directory = argv[1];
+	if (directory == NULL)
+	{
+		home = getenv("HOME");
+		if (home != NULL)
+			directory = home;
+	}
+	else if (strcmp(directory, "-") == 0)
+	{
+		oldpwd = getenv("OLDPWD");
+		if (oldpwd != NULL)
+		{
+			directory = oldpwd;
+			printf("%s\n", directory);
+		}
+	}
+
+	if (directory != NULL)
+	{
+		if (chdir(directory) == -1)
+			perror("Error: cd failed");
+		else
+		{
+			setenv("OLDPWD", getenv("PWD"), 1);
+			if (getcwd(cwd, sizeof(cwd)) != NULL)
+				setenv("PWD", cwd, 1);
+		}
+	}
 }
