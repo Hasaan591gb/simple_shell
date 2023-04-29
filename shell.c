@@ -79,6 +79,26 @@ void execute_command(char *line)
 		cd_command(argv);
 		return;
 	}
+		else if (strcmp(command, "setenv") == 0)
+		{
+			if (argv[1] && argv[2])
+			{
+				if (_setenv(argv[1], argv[2], 1) == -1)
+					fprintf(stderr, "Error: setenv failed\n");
+			}
+			else
+				fprintf(stderr, "Error: setenv requires two arguments\n");
+		}
+		else if (strcmp(command, "unsetenv") == 0)
+		{
+			if (argv[1])
+			{
+				if (_unsetenv(argv[1]) == -1)
+					fprintf(stderr, "Error: unsetenv failed\n");
+			}
+			else
+				fprintf(stderr, "Error: unsetenv requires one argument\n");
+		}
 
 	if (check_env(argv) == 0)
 		return;
