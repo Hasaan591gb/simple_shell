@@ -107,10 +107,7 @@ void execute_command(char *line)
 		argv[0] = get_path(argv[0]);
 
 	if (argv[0] == NULL)
-	{
-		perror("invalid command");
 		return;
-	}
 
 	/* Create a new process */
 	pid = fork();
