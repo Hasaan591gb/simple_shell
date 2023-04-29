@@ -4,7 +4,7 @@ void execute_command(char *line);
 char *get_path(char *command);
 int check_env(char **argv);
 void cd_command(char **argv);
-void check_exit(char **argv);
+int check_exit(char **argv);
 
 /**
  * main - reads commands from standard input and executes them
@@ -102,13 +102,17 @@ void execute_command(char *line)
 			fprintf(stderr, "Error: unsetenv requires one argument\n");
 		return;
 	}
-	check_exit(argv);
+	if (check_exit(argv) != -1)
+	{
+		free(line);
+		exit(check_exit(argv));
+	}
 
 	if (check_env(argv) == 0)
 		return;
 
 	if (access(argv[0], X_OK) != 0)
-		argv[0] = get_path(argv[0]);
+		get_path(argv[0]);
 
 	if (argv[0] == NULL)
 		return;
@@ -126,6 +130,7 @@ void execute_command(char *line)
 	else
 		/* Wait for the child process to complete */
 		wait(NULL);
+
 }
 
 /**
@@ -148,7 +153,9 @@ char *get_path(char *command)
 		if (access(full_path, X_OK) == 0)
 		{
 			free(path_copy);
-			return (full_path);
+			strcpy(command, full_path);
+			free(full_path);
+			return (command);
 		}
 		free(full_path);
 		dir = strtok(NULL, ":");
@@ -230,9 +237,9 @@ void cd_command(char **argv)
  * check_exit - checks if the first argument is "exit"
  * @argv: array of strings
  *
- * Return: void
+ * Return: -1 if fails
  */
-void check_exit(char **argv)
+int check_exit(char **argv)
 {
 	int status;
 
@@ -242,6 +249,8 @@ void check_exit(char **argv)
 			status = atoi(argv[1]);
 		else
 			status = EXIT_SUCCESS;
-		exit(status);
+		return (status);
 	}
+
+	return (-1);
 }
