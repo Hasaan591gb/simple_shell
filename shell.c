@@ -62,7 +62,7 @@ void execute_command(char *line)
 	char *argv[10] = {NULL};
 	char *token;
 	pid_t pid;
-	int i = 0;
+	int i = 0, status;
 
 	/* Tokenize the input to remove the newline character */
 	token = strtok(line, " \n");
@@ -102,10 +102,11 @@ void execute_command(char *line)
 			fprintf(stderr, "Error: unsetenv requires one argument\n");
 		return;
 	}
-	if (check_exit(argv) != -1)
+	status = check_exit(argv);
+	if (status != -1)
 	{
 		free(line);
-		exit(check_exit(argv));
+		exit(status);
 	}
 
 	if (check_env(argv) == 0)
