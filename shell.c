@@ -126,7 +126,7 @@ void execute_command(char *line)
 	{
 		/* Execute the command in the child process */
 		execve(argv[0], argv, NULL);
-		return;
+		exit(EXIT_FAILURE);
 	}
 	else
 		/* Wait for the child process to complete */
